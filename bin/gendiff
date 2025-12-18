@@ -15,10 +15,12 @@ Generate diff
 Usage:
   gendiff (-h|--help)
   gendiff (-v|--version)
+  gendiff [--format <fmt>] <firstFile> <secondFile>
 
 Options:
   -h --help                     Show this screen
   -v --version                  Show version
+  --format <fmt>                Report format [default: stylish]
 DOC;
 
 $version = "gendiff 1.0.0";
@@ -26,5 +28,7 @@ $version = "gendiff 1.0.0";
 $args = Docopt::handle($doc, [
     'argv' => $_SERVER['argv'],
     'help' => true,
-    'version' => $version
+    'version' => $version,
 ]);
+
+// $format = $args['--format'];
