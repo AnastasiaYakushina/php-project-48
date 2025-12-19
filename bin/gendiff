@@ -1,6 +1,7 @@
 #!/usr/bin/env php
-
 <?php
+
+use App\FileReader;
 
 $autoloadPath1 = __DIR__ . '/../../../autoload.php';
 $autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
@@ -9,6 +10,7 @@ if (file_exists($autoloadPath1)) {
 } else {
     require_once $autoloadPath2;
 }
+
 $doc = <<<DOC
 Generate diff
 
@@ -25,10 +27,11 @@ DOC;
 
 $version = "gendiff 1.0.0";
 
-$args = Docopt::handle($doc, [
-    'argv' => $_SERVER['argv'],
-    'help' => true,
-    'version' => $version,
-]);
+$args = Docopt::handle($doc, array('version' => '1.0.0'));
 
-// $format = $args['--format'];
+$firstFile = $args['<firstFile>'];
+$secondFile = $args['<secondFile>'];
+
+$fileReader = new FileReader();
+$fileReader->parse($firstFile);
+$fileReader->parse($secondFile);
