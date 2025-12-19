@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use App\FileReader;
+use function Parser\parse;
 
 $autoloadPath1 = __DIR__ . '/../../../autoload.php';
 $autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
@@ -32,6 +32,5 @@ $args = Docopt::handle($doc, array('version' => '1.0.0'));
 $firstFile = $args['<firstFile>'];
 $secondFile = $args['<secondFile>'];
 
-$fileReader = new FileReader();
-$fileReader->parse($firstFile);
-$fileReader->parse($secondFile);
+parse($firstFile);
+parse($secondFile);
