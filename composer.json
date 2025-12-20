@@ -21,6 +21,7 @@
         "illuminate/support": "^12.43"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^4.0"
+        "squizlabs/php_codesniffer": "^4.0",
+        "phpunit/phpunit": "^12.5"
     }
 }

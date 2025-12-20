@@ -11,8 +11,8 @@ function parse(string $filepath): array
 
 function genDiff(string $pathToFile1, string $pathToFile2): string
 {
-    $file1Data = parse($pathToFile1);
-    $file2Data = parse($pathToFile2);
+    $file1Data = processBooleanValues(parse($pathToFile1));
+    $file2Data = processBooleanValues(parse($pathToFile2));
     $mergedArray = array_merge($file1Data, $file2Data);
 
     $arrayOfChanges = [];
@@ -49,6 +49,16 @@ function genDiff(string $pathToFile1, string $pathToFile2): string
     }
 
     $result = implode("\n", $stringsArray);
-    var_dump(("{\n$result\n}"));
+    // var_dump(("{\n$result\n}"));
+    return "{\n$result\n}";
+}
+
+function processBooleanValues(array $array): array
+{
+    $result = [];
+    foreach ($array as $key => $value) {
+        $newValue = is_bool($value) ? ($value ? 'true' : 'false') : $value;
+        $result[$key] = $newValue;
+    }
     return $result;
 }
