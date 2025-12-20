@@ -24,7 +24,8 @@ jobs:
       - run: |
           vendor/bin/phpunit \
             --coverage-clover=coverage.xml \
-            --colors=always
+            --colors=always \
+            tests/
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
