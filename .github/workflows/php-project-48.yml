@@ -7,21 +7,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           extensions: curl, mbstring, zip, xml, json, pdo, mysql, openssl
+          coverage: xdebug
 
       - run: make install
       - run: make lint
       - run: make test
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - run: |
+          vendor/bin/phpunit \
+            --coverage-clover=coverage.xml \
+            --whitelist=src \
+            --colors=always
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.php.coverage.reportPaths=coverage.xml
+            -Dsonar.coverage.exclusions=**/*Test.php,**/tests/**
