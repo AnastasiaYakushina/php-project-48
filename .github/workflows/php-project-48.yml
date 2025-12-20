@@ -1,6 +1,8 @@
 name: php-project-48
 
-on: push
+on:
+  - push
+  - pull_request
 
 jobs:
   build:
@@ -18,7 +20,7 @@ jobs:
 
       - run: make install
       - run: make lint
-      - run: make test
+      - run: make test-coverage
       - run: |
           vendor/bin/phpunit \
             --coverage-clover=coverage.xml \
