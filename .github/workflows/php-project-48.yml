@@ -9,6 +9,11 @@ jobs:
     steps:
 
       - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, mbstring, zip, xml, json, pdo, mysql, openssl
       - run: make install
       - run: make lint
       - run: make test 
