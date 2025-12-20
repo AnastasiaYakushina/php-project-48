@@ -22,7 +22,6 @@ jobs:
       - run: |
           vendor/bin/phpunit \
             --coverage-clover=coverage.xml \
-            --whitelist=src \
             --colors=always
 
       - name: SonarQube Scan
