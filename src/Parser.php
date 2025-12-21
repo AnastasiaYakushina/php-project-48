@@ -1,59 +1,28 @@
 <?php
 
-namespace Differ;
+namespace Differ\Parser;
+
+use Symfony\Component\Yaml\Yaml;
 
 function parse(string $filepath): array
 {
+    $extension = getExtension($filepath);
     $fileContent = file_get_contents($filepath);
-    $data = json_decode($fileContent, true);
-    return $data;
+    if ($extension === 'json') {
+        return convertBooleanValuesToString(json_decode($fileContent, true));
+    }
+    if ($extension === 'yml' || $extension === 'yaml') {
+        return convertBooleanValuesToString(Yaml::parse($fileContent));
+    }
 }
 
-function genDiff(string $pathToFile1, string $pathToFile2): string
+function getExtension(string $str): string
 {
-    $file1Data = processBooleanValues(parse($pathToFile1));
-    $file2Data = processBooleanValues(parse($pathToFile2));
-    $mergedArray = array_merge($file1Data, $file2Data);
-
-    $arrayOfChanges = [];
-    foreach ($mergedArray as $key => $value) {
-        if (!array_key_exists($key, $file1Data)) {
-            $arrayOfChanges[$key] = ['added', $value];
-        } elseif (!array_key_exists($key, $file2Data)) {
-            $arrayOfChanges[$key] = ['deleted', $value];
-        } else {
-            if ($file1Data[$key] === $file2Data[$key]) {
-                $arrayOfChanges[$key] = ['unchanged', $value];
-            } else {
-                $arrayOfChanges[$key] = ['changed', $file1Data[$key], $value];
-            }
-        }
-    }
-
-    $collection = collect($arrayOfChanges);
-    $sortedCollection = $collection->sortKeys();
-    $sortedArrayOfChanges = $sortedCollection->all();
-
-    $stringsArray = [];
-    foreach ($sortedArrayOfChanges as $key => $value) {
-        if ($value[0] === 'unchanged') {
-            $stringsArray[] = "  $key: $value[1]";
-        } elseif ($value[0] === 'added') {
-            $stringsArray[] = "+ $key: $value[1]";
-        } elseif ($value[0] === 'deleted') {
-            $stringsArray[] = "- $key: $value[1]";
-        } elseif ($value[0] === 'changed') {
-            $stringsArray[] = "- $key: $value[1]";
-            $stringsArray[] = "+ $key: $value[2]";
-        }
-    }
-
-    $result = implode("\n", $stringsArray);
-    // var_dump(("{\n$result\n}"));
-    return "{\n$result\n}";
+    $parts = explode('.', $str);
+    return end($parts);
 }
 
-function processBooleanValues(array $array): array
+function convertBooleanValuesToString(array $array): array
 {
     $result = [];
     foreach ($array as $key => $value) {
