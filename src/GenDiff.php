@@ -3,47 +3,60 @@
 namespace Differ\GenDiff;
 
 use function Differ\Parser\parse;
+use function Differ\Formatters\Stylish\stylish;
 
-function genDiff(string $pathToFile1, string $pathToFile2): string
+function genDiff(string $pathToFile1, string $pathToFile2, ?callable $formatter = null)
 {
     $file1Data = parse($pathToFile1);
     $file2Data = parse($pathToFile2);
+    $diffTree = generateDiffTree($file1Data, $file2Data);
+    if ($formatter === null) {
+        return stylish($diffTree);
+    }
+}
+
+function generateDiffTree(array $file1Data, array $file2Data): array
+{
     $mergedArray = array_merge($file1Data, $file2Data);
 
     $arrayOfChanges = [];
     foreach ($mergedArray as $key => $value) {
         if (!array_key_exists($key, $file1Data)) {
-            $arrayOfChanges[$key] = ['added', $value];
+            $arrayOfChanges[$key] = [
+                'status' => 'added',
+                'value' => $value
+            ];
         } elseif (!array_key_exists($key, $file2Data)) {
-            $arrayOfChanges[$key] = ['deleted', $value];
+            $arrayOfChanges[$key] = [
+                'status' => 'deleted',
+                'value' => $value
+            ];
         } else {
             if ($file1Data[$key] === $file2Data[$key]) {
-                $arrayOfChanges[$key] = ['unchanged', $value];
+                $arrayOfChanges[$key] = [
+                    'status' => 'unchanged',
+                    'value' => $value,
+                ];
             } else {
-                $arrayOfChanges[$key] = ['changed', $file1Data[$key], $value];
+                if (is_array($file1Data[$key]) && is_array($file2Data[$key])) {
+                    $arrayOfChanges[$key] = [
+                        'status' => 'tree',
+                        'value' => generateDiffTree($file1Data[$key], $file2Data[$key]),
+                    ];
+                } else {
+                    $arrayOfChanges[$key] = [
+                        'status' => 'changed',
+                        'value' => [
+                            'old' => $file1Data[$key],
+                            'new' => $value
+                        ]
+                    ];
+                }
             }
         }
     }
-
     $collection = collect($arrayOfChanges);
     $sortedCollection = $collection->sortKeys();
     $sortedArrayOfChanges = $sortedCollection->all();
-
-    $stringsArray = [];
-    foreach ($sortedArrayOfChanges as $key => $value) {
-        if ($value[0] === 'unchanged') {
-            $stringsArray[] = "  $key: $value[1]";
-        } elseif ($value[0] === 'added') {
-            $stringsArray[] = "+ $key: $value[1]";
-        } elseif ($value[0] === 'deleted') {
-            $stringsArray[] = "- $key: $value[1]";
-        } elseif ($value[0] === 'changed') {
-            $stringsArray[] = "- $key: $value[1]";
-            $stringsArray[] = "+ $key: $value[2]";
-        }
-    }
-
-    $result = implode("\n", $stringsArray);
-    // var_dump(("{\n$result\n}"));
-    return "{\n$result\n}";
+    return $sortedArrayOfChanges;
 }

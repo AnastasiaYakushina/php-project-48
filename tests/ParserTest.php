@@ -10,7 +10,7 @@ class ParserTest extends TestCase
 {
     public function testGenDiff(): void
     {
-        $actual = "{\n- follow: false\n  host: hexlet.io\n- proxy: 123.234.53.22\n- timeout: 50\n+ timeout: 20\n+ verbose: true\n}";
+        $actual = file_get_contents('tests/fixtures/expected.txt');
         $this->assertEquals($actual, genDiff('tests/fixtures/file1.json', 'tests/fixtures/file2.json'));
         $this->assertEquals($actual, genDiff('tests/fixtures/file1.yml', 'tests/fixtures/file2.yml'));
     }

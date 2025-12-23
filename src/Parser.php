@@ -9,10 +9,10 @@ function parse(string $filepath): array
     $extension = getExtension($filepath);
     $fileContent = file_get_contents($filepath);
     if ($extension === 'json') {
-        return convertBooleanValuesToString(json_decode($fileContent, true));
+        return convertBooleanNullToString(json_decode($fileContent, true));
     }
     if ($extension === 'yml' || $extension === 'yaml') {
-        return convertBooleanValuesToString(Yaml::parse($fileContent));
+        return convertBooleanNullToString(Yaml::parse($fileContent));
     }
 }
 
@@ -22,12 +22,24 @@ function getExtension(string $str): string
     return end($parts);
 }
 
-function convertBooleanValuesToString(array $array): array
+function convertBooleanNullToString(array $array): array
 {
     $result = [];
+
     foreach ($array as $key => $value) {
-        $newValue = is_bool($value) ? ($value ? 'true' : 'false') : $value;
-        $result[$key] = $newValue;
+        if (is_array($value)) {
+            $result[$key] = convertBooleanNullToString($value);
+        } else {
+            if ($value === true) {
+                $result[$key] = 'true';
+            } elseif ($value === false) {
+                $result[$key] = 'false';
+            } elseif ($value === null) {
+                $result[$key] = 'null';
+            } else {
+                $result[$key] = $value;
+            }
+        }
     }
     return $result;
 }
