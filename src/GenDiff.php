@@ -3,16 +3,14 @@
 namespace Differ\GenDiff;
 
 use function Differ\Parser\parse;
-use function Differ\Formatters\Stylish\stylish;
+use function Differ\Formatters\format;
 
-function genDiff(string $pathToFile1, string $pathToFile2, ?callable $formatter = null)
+function genDiff(string $pathToFile1, string $pathToFile2, string $formatName)
 {
     $file1Data = parse($pathToFile1);
     $file2Data = parse($pathToFile2);
     $diffTree = generateDiffTree($file1Data, $file2Data);
-    if ($formatter === null) {
-        return stylish($diffTree);
-    }
+    return format($diffTree, $formatName);
 }
 
 function generateDiffTree(array $file1Data, array $file2Data): array
@@ -57,6 +55,5 @@ function generateDiffTree(array $file1Data, array $file2Data): array
     }
     $collection = collect($arrayOfChanges);
     $sortedCollection = $collection->sortKeys();
-    $sortedArrayOfChanges = $sortedCollection->all();
-    return $sortedArrayOfChanges;
+    return $sortedCollection->all();
 }

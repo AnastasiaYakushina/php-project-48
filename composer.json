@@ -9,7 +9,10 @@
         "files": [
             "src/Parser.php",
             "src/GenDiff.php",
-            "src/Formatters/Stylish.php"
+            "src/Formatters.php",
+            "src/Formatters/Stylish.php",
+            "src/Formatters/Plain.php",
+            "src/Formatters/Json.php"
         ]
     },
     "authors": [
