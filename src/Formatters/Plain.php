@@ -13,7 +13,7 @@ function formatDiffTreeToStrings(array $diffTree, array $path = []): array
     $diffTreeWithSymbols = [];
 
     foreach ($diffTree as $key => $data) {
-        $currentPath = empty($path) ? [$key] : [...$path, $key];
+        $currentPath = $path === [] ? [$key] : [...$path, $key];
         $currentKey = implode('.', $currentPath);
         $status = $data['status'];
         if ($status === 'added') {
@@ -40,7 +40,7 @@ function getValue(mixed $value): mixed
 
     if (is_array($value)) {
         return '[complex value]';
-    } elseif (is_string($value) && !in_array($value, $booleanNullValues)) {
+    } elseif (is_string($value) && !in_array($value, $booleanNullValues, true)) {
         return "'{$value}'";
     }
     return $value;

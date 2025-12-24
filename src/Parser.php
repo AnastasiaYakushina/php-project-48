@@ -13,7 +13,7 @@ function parse(string $filepath): array
     return convertBooleanNullToString($parsedContent);
 }
 
-function decodeFileContent(mixed $fileContent, string $extension): array
+function decodeFileContent(mixed $fileContent, string $extension): array|false
 {
     if ($extension === 'json') {
         return json_decode($fileContent, true);
@@ -21,6 +21,7 @@ function decodeFileContent(mixed $fileContent, string $extension): array
     if ($extension === 'yml' || $extension === 'yaml') {
         return Yaml::parse($fileContent);
     }
+    return false;
 }
 
 function convertBooleanNullToString(array $array): array
