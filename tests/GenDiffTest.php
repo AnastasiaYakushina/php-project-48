@@ -25,7 +25,7 @@ class GenDiffTest extends TestCase
     public function testGenDiffJson(): void
     {
         $expected = file_get_contents('tests/fixtures/expected.json');
-        $this->assertEquals($expected, genDiff('tests/fixtures/file1.json', 'tests/fixtures/file2.json', 'json'));
-        $this->assertEquals($expected, genDiff('tests/fixtures/file1.yml', 'tests/fixtures/file2.yml', 'json'));
+        $this->assertJsonStringEqualsJsonString($expected, genDiff('tests/fixtures/file1.json', 'tests/fixtures/file2.json', 'json'));
+        $this->assertJsonStringEqualsJsonString($expected, genDiff('tests/fixtures/file1.yml', 'tests/fixtures/file2.yml', 'json'));
     }
 }

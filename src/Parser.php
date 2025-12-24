@@ -6,20 +6,21 @@ use Symfony\Component\Yaml\Yaml;
 
 function parse(string $filepath): array
 {
-    $extension = getExtension($filepath);
     $fileContent = file_get_contents($filepath);
-    if ($extension === 'json') {
-        return convertBooleanNullToString(json_decode($fileContent, true));
-    }
-    if ($extension === 'yml' || $extension === 'yaml') {
-        return convertBooleanNullToString(Yaml::parse($fileContent));
-    }
+    $parts = explode('.', $filepath);
+    $extension = end($parts);
+    $parsedContent = decodeFileContent($fileContent, $extension);
+    return convertBooleanNullToString($parsedContent);
 }
 
-function getExtension(string $str): string
+function decodeFileContent(mixed $fileContent, string $extension): array
 {
-    $parts = explode('.', $str);
-    return end($parts);
+    if ($extension === 'json') {
+        return json_decode($fileContent, true);
+    }
+    if ($extension === 'yml' || $extension === 'yaml') {
+        return Yaml::parse($fileContent);
+    }
 }
 
 function convertBooleanNullToString(array $array): array
@@ -41,5 +42,6 @@ function convertBooleanNullToString(array $array): array
             }
         }
     }
+
     return $result;
 }

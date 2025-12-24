@@ -12,6 +12,7 @@ function stylish(array $diffTree): string
 function formatDiffTreeWithSymbols(array $diffTree): array
 {
     $diffTreeWithSymbols = [];
+
     foreach ($diffTree as $key => $data) {
         $status = $data['status'];
         if ($status === 'unchanged') {
@@ -28,6 +29,7 @@ function formatDiffTreeWithSymbols(array $diffTree): array
             $diffTreeWithSymbols["{$key}"] = $children;
         }
     }
+
     return $diffTreeWithSymbols;
 }
 
@@ -35,6 +37,7 @@ function formatDiffTreeToString(array $tree, int $depth = 1): string
 {
     $lines = [];
     $baseIndent = str_repeat(' ', $depth * 4);
+
     foreach ($tree as $key => $value) {
         $hasSignPrefix = str_starts_with($key, '+') || str_starts_with($key, '-');
         $indent = ($hasSignPrefix) ? str_repeat(' ', $depth * 4 - 2) : $baseIndent;

@@ -11,6 +11,7 @@ function plain(array $diffTree): string
 function formatDiffTreeToStrings(array $diffTree, array $path = []): array
 {
     $diffTreeWithSymbols = [];
+
     foreach ($diffTree as $key => $data) {
         $currentPath = empty($path) ? [$key] : [...$path, $key];
         $currentKey = implode('.', $currentPath);
@@ -29,12 +30,14 @@ function formatDiffTreeToStrings(array $diffTree, array $path = []): array
             $diffTreeWithSymbols = [...$diffTreeWithSymbols, ...$children];
         }
     }
+
     return $diffTreeWithSymbols;
 }
 
-function getValue($value)
+function getValue(mixed $value): mixed
 {
     $booleanNullValues = ['true', 'false', 'null'];
+
     if (is_array($value)) {
         return '[complex value]';
     } elseif (is_string($value) && !in_array($value, $booleanNullValues)) {
