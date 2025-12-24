@@ -11,3 +11,37 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=AnastasiaYakushina_php-project-48&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=AnastasiaYakushina_php-project-48)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=AnastasiaYakushina_php-project-48&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=AnastasiaYakushina_php-project-48)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=AnastasiaYakushina_php-project-48&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=AnastasiaYakushina_php-project-48)
+
+### Описание
+**Gendiff** - консольная утилита, сравнивающая файлы в форматах JSON и YAML и представляющая три формата вывода:
+
+- stylish (дерево, по умолчанию)
+
+- plain (текстовый список)
+
+- json
+
+### Системные требования
+- PHP: версия 8.0 или выше
+
+- Composer: версия 2.0 или выше
+
+### Установка
+1. `git clone git@github.com:AnastasiaYakushina/php-project-48.gitt`
+
+2. `cd php-project-48`
+
+3. `make install`
+
+### Запуск утилиты
+- `gendiff --format filepath1 filepath2`
+
+### Примеры работы 
+### --format stylish
+[![asciicast](https://asciinema.org/a/763899.svg)](https://asciinema.org/a/763899)
+
+### --format plain
+[![asciicast](https://asciinema.org/a/763900.svg)](https://asciinema.org/a/763900)
+
+### --format json
+[![asciicast](https://asciinema.org/a/763901.svg)](https://asciinema.org/a/763901)
