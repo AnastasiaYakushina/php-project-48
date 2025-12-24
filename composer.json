@@ -24,7 +24,7 @@
     "require": {
         "docopt/docopt": "^1.0",
         "illuminate/support": "^12.43",
-        "symfony/yaml": "^8.0"
+        "symfony/yaml": "^7.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",
