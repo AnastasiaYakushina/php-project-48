@@ -27,7 +27,7 @@
 - Composer: версия 2.0 или выше
 
 ### Установка
-1. `git clone git@github.com:AnastasiaYakushina/php-project-48.gitt`
+1. `git clone git@github.com:AnastasiaYakushina/php-project-48.git`
 
 2. `cd php-project-48`
 
