@@ -10,7 +10,8 @@ function parse(mixed $fileContent, string $extension): array
         case 'json':
             return json_decode($fileContent, true);
 
-        case 'yml' || 'yaml':
+        case 'yml':
+        case 'yaml':
             return Yaml::parse($fileContent);
 
         default:
