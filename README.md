@@ -44,4 +44,4 @@
 [![asciicast](https://asciinema.org/a/763900.svg)](https://asciinema.org/a/763900)
 
 ### --format json
-[![asciicast](https://asciinema.org/a/763901.svg)](https://asciinema.org/a/763901)
+[![asciicast](https://asciinema.org/a/764253.svg)](https://asciinema.org/a/764253)

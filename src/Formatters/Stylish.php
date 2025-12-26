@@ -2,8 +2,6 @@
 
 namespace Differ\Formatters\Stylish;
 
-use function Differ\Normalize\normalizeBoolNull;
-
 function stylish(array $diffTree): string
 {
     $diffTreeWithSymbols = formatDiffTreeWithSymbols($diffTree);
@@ -14,35 +12,50 @@ function stylish(array $diffTree): string
 function formatDiffTreeWithSymbols(array $diffTree): array
 {
     $mappedItems = array_map(function ($data) {
-        $key = $data['key'];
         $status = $data['status'];
+        $key = $data['key'];
+        $value = $data['value'];
 
         switch ($status) {
             case 'unchanged':
-                return [$key => $data['value']];
+                return [$key => formatValue($value)];
 
             case 'added':
-                return ["+ {$key}" => $data['value']];
+                return ["+ {$key}" => formatValue($value)];
 
             case 'deleted':
-                return ["- {$key}" => $data['value']];
+                return ["- {$key}" => formatValue($value)];
 
             case 'changed':
                 return [
-                    "- {$key}" => $data['value']['old'],
-                    "+ {$key}" => $data['value']['new']
+                    "- {$key}" => formatValue($value['old']),
+                    "+ {$key}" => formatValue($value['new'])
                 ];
 
             case 'tree':
-                $children = formatDiffTreeWithSymbols($data['value']);
+                $children = formatDiffTreeWithSymbols($value);
                 return [$key => $children];
 
             default:
                 return [];
         }
-    }, normalizeBoolNull($diffTree));
+    }, $diffTree);
 
     return array_merge(...$mappedItems);
+}
+
+function formatValue(mixed $value): mixed
+{
+    switch (true) {
+        case $value === true:
+            return 'true';
+        case $value === false:
+            return 'false';
+        case $value === null:
+            return 'null';
+        default:
+            return $value;
+    }
 }
 
 function formatDiffTreeToString(array $tree, int $depth = 1): string
