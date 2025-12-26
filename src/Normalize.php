@@ -4,23 +4,19 @@ namespace Differ\Normalize;
 
 function normalizeBoolNull(array $array): array
 {
-    $result = [];
-
-    foreach ($array as $key => $value) {
+    return array_map(function ($value) {
         if (is_array($value)) {
-            $result[$key] = normalizeBoolNull($value);
-        } else {
-            if ($value === true) {
-                $result[$key] = 'true';
-            } elseif ($value === false) {
-                $result[$key] = 'false';
-            } elseif ($value === null) {
-                $result[$key] = 'null';
-            } else {
-                $result[$key] = $value;
-            }
+            return normalizeBoolNull($value);
         }
-    }
 
-    return $result;
+        if ($value === true) {
+            return 'true';
+        } elseif ($value === false) {
+            return 'false';
+        } elseif ($value === null) {
+            return 'null';
+        } else {
+            return $value;
+        }
+    }, $array);
 }

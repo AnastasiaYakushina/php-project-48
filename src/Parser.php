@@ -6,11 +6,14 @@ use Symfony\Component\Yaml\Yaml;
 
 function parse(mixed $fileContent, string $extension): array
 {
-    if ($extension === 'json') {
-        return json_decode($fileContent, true);
+    switch ($extension) {
+        case 'json':
+            return json_decode($fileContent, true);
+
+        case 'yml' || 'yaml':
+            return Yaml::parse($fileContent);
+
+        default:
+            return [];
     }
-    if ($extension === 'yml' || $extension === 'yaml') {
-        return Yaml::parse($fileContent);
-    }
-    return [];
 }

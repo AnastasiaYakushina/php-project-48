@@ -12,29 +12,34 @@ function plain(array $diffTree): string
 
 function formatDiffTreeToStrings(array $diffTree, array $path = []): array
 {
-    $diffTreeWithSymbols = [];
-
-    foreach (normalizeBoolNull($diffTree) as $data) {
+    $diffLines = array_map(function ($data) use ($path) {
         $key = $data['key'];
         $currentPath = $path === [] ? [$key] : [...$path, $key];
         $currentKey = implode('.', $currentPath);
         $status = $data['status'];
-        if ($status === 'added') {
-            $value = getValue($data['value']);
-            $diffTreeWithSymbols[] = "Property '{$currentKey}' was added with value: {$value}";
-        } elseif ($status === 'deleted') {
-            $diffTreeWithSymbols[] = "Property '{$currentKey}' was removed";
-        } elseif ($status === 'changed') {
-            $oldValue = getValue($data['value']['old']);
-            $newValue = getValue($data['value']['new']);
-            $diffTreeWithSymbols[] = "Property '{$currentKey}' was updated. From {$oldValue} to {$newValue}";
-        } elseif ($status === 'tree') {
-            $children = formatDiffTreeToStrings($data['value'], $currentPath);
-            $diffTreeWithSymbols = [...$diffTreeWithSymbols, ...$children];
-        }
-    }
 
-    return $diffTreeWithSymbols;
+        switch ($status) {
+            case 'added':
+                $value = getValue($data['value']);
+                return ["Property '{$currentKey}' was added with value: {$value}"];
+
+            case 'deleted':
+                return ["Property '{$currentKey}' was removed"];
+
+            case 'changed':
+                $oldValue = getValue($data['value']['old']);
+                $newValue = getValue($data['value']['new']);
+                return ["Property '{$currentKey}' was updated. From {$oldValue} to {$newValue}"];
+
+            case 'tree':
+                return formatDiffTreeToStrings($data['value'], $currentPath);
+
+            default:
+                return [];
+        }
+    }, normalizeBoolNull($diffTree));
+
+    return !($diffLines === []) ? array_merge(...$diffLines) : [];
 }
 
 function getValue(mixed $value): mixed
@@ -48,26 +53,3 @@ function getValue(mixed $value): mixed
     }
     return $value;
 }
-
-// function convertBooleanNullToString(array $array): array
-// {
-//     $result = [];
-
-//     foreach ($array as $key => $value) {
-//         if (is_array($value)) {
-//             $result[$key] = convertBooleanNullToString($value);
-//         } else {
-//             if ($value === true) {
-//                 $result[$key] = 'true';
-//             } elseif ($value === false) {
-//                 $result[$key] = 'false';
-//             } elseif ($value === null) {
-//                 $result[$key] = 'null';
-//             } else {
-//                 $result[$key] = $value;
-//             }
-//         }
-//     }
-
-//     return $result;
-// }
