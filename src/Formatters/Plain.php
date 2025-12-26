@@ -14,7 +14,8 @@ function formatDiffTreeToStrings(array $diffTree, array $path = []): array
 {
     $diffTreeWithSymbols = [];
 
-    foreach (normalizeBoolNull($diffTree) as $key => $data) {
+    foreach (normalizeBoolNull($diffTree) as $data) {
+        $key = $data['key'];
         $currentPath = $path === [] ? [$key] : [...$path, $key];
         $currentKey = implode('.', $currentPath);
         $status = $data['status'];

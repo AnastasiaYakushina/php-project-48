@@ -15,7 +15,8 @@ function formatDiffTreeWithSymbols(array $diffTree): array
 {
     $diffTreeWithSymbols = [];
 
-    foreach (normalizeBoolNull($diffTree) as $key => $data) {
+    foreach (normalizeBoolNull($diffTree) as $data) {
+        $key = $data['key'];
         $status = $data['status'];
         if ($status === 'unchanged') {
             $diffTreeWithSymbols["{$key}"] = $data['value'];

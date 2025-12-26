@@ -9,9 +9,9 @@ function genDiff(string $pathToFile1, string $pathToFile2, string $formatName = 
 {
     [$file1Content, $extension1] = getFileData($pathToFile1);
     [$file2Content, $extension2] = getFileData($pathToFile2);
-    $parsedContent1 = parse($file1Content, $extension1);
-    $parsedContent2 = parse($file2Content, $extension2);
-    $diffTree = generateDiffTree($parsedContent1, $parsedContent2);
+    $content1 = parse($file1Content, $extension1);
+    $content2 = parse($file2Content, $extension2);
+    $diffTree = generateDiffTree($content1, $content2);
     return format($diffTree, $formatName);
 }
 
@@ -23,49 +23,55 @@ function getFileData(string $filepath): mixed
     return [$fileContent, $extension];
 }
 
-function generateDiffTree(array $parsedContent1, array $parsedContent2): array
+function generateDiffTree(array $content1, array $content2): array
 {
-    $mergedArray = array_merge($parsedContent1, $parsedContent2);
+    $keys = array_unique(array_merge(array_keys($content1), array_keys($content2)));
+    $collection = collect($keys);
+    $sortedKeys = $collection->sort()->all();
 
-    $arrayOfChanges = [];
+    return array_map(function ($key) use ($content1, $content2) {
+        $keyInContent1 = array_key_exists($key, $content1);
+        $keyInContent2 = array_key_exists($key, $content2);
 
-    foreach ($mergedArray as $key => $value) {
-        if (!array_key_exists($key, $parsedContent1)) {
-            $arrayOfChanges[$key] = [
+        if (!$keyInContent1) {
+            return [
+                'key' => $key,
                 'status' => 'added',
-                'value' => $value
+                'value' => $content2[$key]
             ];
-        } elseif (!array_key_exists($key, $parsedContent2)) {
-            $arrayOfChanges[$key] = [
-                'status' => 'deleted',
-                'value' => $value
-            ];
-        } else {
-            if ($parsedContent1[$key] === $parsedContent2[$key]) {
-                $arrayOfChanges[$key] = [
-                    'status' => 'unchanged',
-                    'value' => $value,
-                ];
-            } else {
-                if (is_array($parsedContent1[$key]) && is_array($parsedContent2[$key])) {
-                    $arrayOfChanges[$key] = [
-                        'status' => 'tree',
-                        'value' => generateDiffTree($parsedContent1[$key], $parsedContent2[$key]),
-                    ];
-                } else {
-                    $arrayOfChanges[$key] = [
-                        'status' => 'changed',
-                        'value' => [
-                            'old' => $parsedContent1[$key],
-                            'new' => $value
-                        ]
-                    ];
-                }
-            }
         }
-    }
 
-    $collection = collect($arrayOfChanges);
-    $sortedCollection = $collection->sortKeys();
-    return $sortedCollection->all();
+        if (!$keyInContent2) {
+            return [
+                'key' => $key,
+                'status' => 'deleted',
+                'value' => $content1[$key]
+            ];
+        }
+
+        if (is_array($content1[$key]) && is_array($content2[$key])) {
+            return [
+                'key' => $key,
+                'status' => 'tree',
+                'value' => generateDiffTree($content1[$key], $content2[$key]),
+            ];
+        }
+
+        if ($content1[$key] === $content2[$key]) {
+            return [
+                'key' => $key,
+                'status' => 'unchanged',
+                'value' => $content1[$key],
+            ];
+        }
+
+        return [
+            'key' => $key,
+            'status' => 'changed',
+            'value' => [
+                'old' => $content1[$key],
+                'new' => $content2[$key]
+            ]
+        ];
+    }, $sortedKeys);
 }
