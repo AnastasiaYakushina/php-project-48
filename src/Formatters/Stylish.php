@@ -2,6 +2,8 @@
 
 namespace Differ\Formatters\Stylish;
 
+use function Differ\Normalize\normalizeBoolNull;
+
 function stylish(array $diffTree): string
 {
     $diffTreeWithSymbols = formatDiffTreeWithSymbols($diffTree);
@@ -13,7 +15,7 @@ function formatDiffTreeWithSymbols(array $diffTree): array
 {
     $diffTreeWithSymbols = [];
 
-    foreach ($diffTree as $key => $data) {
+    foreach (normalizeBoolNull($diffTree) as $key => $data) {
         $status = $data['status'];
         if ($status === 'unchanged') {
             $diffTreeWithSymbols["{$key}"] = $data['value'];
@@ -53,3 +55,26 @@ function formatDiffTreeToString(array $tree, int $depth = 1): string
 
     return implode("\n", $lines);
 }
+
+// function convertBooleanNullToString(array $array): array
+// {
+//     $result = [];
+
+//     foreach ($array as $key => $value) {
+//         if (is_array($value)) {
+//             $result[$key] = convertBooleanNullToString($value);
+//         } else {
+//             if ($value === true) {
+//                 $result[$key] = 'true';
+//             } elseif ($value === false) {
+//                 $result[$key] = 'false';
+//             } elseif ($value === null) {
+//                 $result[$key] = 'null';
+//             } else {
+//                 $result[$key] = $value;
+//             }
+//         }
+//     }
+
+//     return $result;
+// }

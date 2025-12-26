@@ -2,6 +2,8 @@
 
 namespace Differ\Formatters\Plain;
 
+use function Differ\Normalize\normalizeBoolNull;
+
 function plain(array $diffTree): string
 {
     $diffString = formatDiffTreeToStrings($diffTree);
@@ -12,7 +14,7 @@ function formatDiffTreeToStrings(array $diffTree, array $path = []): array
 {
     $diffTreeWithSymbols = [];
 
-    foreach ($diffTree as $key => $data) {
+    foreach (normalizeBoolNull($diffTree) as $key => $data) {
         $currentPath = $path === [] ? [$key] : [...$path, $key];
         $currentKey = implode('.', $currentPath);
         $status = $data['status'];
@@ -45,3 +47,26 @@ function getValue(mixed $value): mixed
     }
     return $value;
 }
+
+// function convertBooleanNullToString(array $array): array
+// {
+//     $result = [];
+
+//     foreach ($array as $key => $value) {
+//         if (is_array($value)) {
+//             $result[$key] = convertBooleanNullToString($value);
+//         } else {
+//             if ($value === true) {
+//                 $result[$key] = 'true';
+//             } elseif ($value === false) {
+//                 $result[$key] = 'false';
+//             } elseif ($value === null) {
+//                 $result[$key] = 'null';
+//             } else {
+//                 $result[$key] = $value;
+//             }
+//         }
+//     }
+
+//     return $result;
+// }

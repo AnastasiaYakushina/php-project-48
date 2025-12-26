@@ -7,46 +7,56 @@ use function Differ\Formatters\format;
 
 function genDiff(string $pathToFile1, string $pathToFile2, string $formatName = 'stylish'): string|false
 {
-    $file1Content = parse($pathToFile1);
-    $file2Content = parse($pathToFile2);
-    $diffTree = generateDiffTree($file1Content, $file2Content);
+    [$file1Content, $extension1] = getFileData($pathToFile1);
+    [$file2Content, $extension2] = getFileData($pathToFile2);
+    $parsedContent1 = parse($file1Content, $extension1);
+    $parsedContent2 = parse($file2Content, $extension2);
+    $diffTree = generateDiffTree($parsedContent1, $parsedContent2);
     return format($diffTree, $formatName);
 }
 
-function generateDiffTree(array $file1Content, array $file2Content): array
+function getFileData(string $filepath): mixed
 {
-    $mergedArray = array_merge($file1Content, $file2Content);
+    $fileContent = file_get_contents($filepath);
+    $parts = explode('.', $filepath);
+    $extension = end($parts);
+    return [$fileContent, $extension];
+}
+
+function generateDiffTree(array $parsedContent1, array $parsedContent2): array
+{
+    $mergedArray = array_merge($parsedContent1, $parsedContent2);
 
     $arrayOfChanges = [];
 
     foreach ($mergedArray as $key => $value) {
-        if (!array_key_exists($key, $file1Content)) {
+        if (!array_key_exists($key, $parsedContent1)) {
             $arrayOfChanges[$key] = [
                 'status' => 'added',
                 'value' => $value
             ];
-        } elseif (!array_key_exists($key, $file2Content)) {
+        } elseif (!array_key_exists($key, $parsedContent2)) {
             $arrayOfChanges[$key] = [
                 'status' => 'deleted',
                 'value' => $value
             ];
         } else {
-            if ($file1Content[$key] === $file2Content[$key]) {
+            if ($parsedContent1[$key] === $parsedContent2[$key]) {
                 $arrayOfChanges[$key] = [
                     'status' => 'unchanged',
                     'value' => $value,
                 ];
             } else {
-                if (is_array($file1Content[$key]) && is_array($file2Content[$key])) {
+                if (is_array($parsedContent1[$key]) && is_array($parsedContent2[$key])) {
                     $arrayOfChanges[$key] = [
                         'status' => 'tree',
-                        'value' => generateDiffTree($file1Content[$key], $file2Content[$key]),
+                        'value' => generateDiffTree($parsedContent1[$key], $parsedContent2[$key]),
                     ];
                 } else {
                     $arrayOfChanges[$key] = [
                         'status' => 'changed',
                         'value' => [
-                            'old' => $file1Content[$key],
+                            'old' => $parsedContent1[$key],
                             'new' => $value
                         ]
                     ];
