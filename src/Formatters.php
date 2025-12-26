@@ -16,6 +16,6 @@ function format(array $diffTree, string $formatName): string
         case 'json':
             return json($diffTree);
         default:
-            throw new \Exception("Incorrect format: '$formatName'");
+            throw new \UnexpectedValueException("Incorrect format: '$formatName'");
     }
 }

@@ -39,7 +39,7 @@ function formatDiffTreeToStrings(array $diffTree, array $path = []): array
         }
     }, $diffTree);
 
-    return !($lines === []) ? array_merge(...$lines) : [];
+    return ($lines !== []) ? array_merge(...$lines) : [];
 }
 
 
