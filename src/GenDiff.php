@@ -18,7 +18,7 @@ function genDiff(string $filePath1, string $filePath2, string $formatName = 'sty
 function getFileData(string $filepath): array
 {
     $fileContent = file_get_contents($filepath);
-    $extension = pathinfo($filepath)['extension'];
+    $extension = pathinfo($filepath)['extension'] ?? '';
     return [$fileContent, $extension];
 }
 
