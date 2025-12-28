@@ -2,30 +2,61 @@
 
 namespace Phpunit\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function Differ\Differ\genDiff;
 
 class GenDiffTest extends TestCase
 {
-    public function testGenDiffStylish(): void
+    #[DataProvider('genDiffProvider')]
+    public function testGenDiff(string $expectedFile, array $testData): void
     {
-        $expected = file_get_contents('tests/fixtures/expectedStylish.txt');
-        $this->assertEquals($expected, genDiff('tests/fixtures/file1.json', 'tests/fixtures/file2.json'));
-        $this->assertEquals($expected, genDiff('tests/fixtures/file1.yml', 'tests/fixtures/file2.yml'));
+        $expectedFilePath = $this->getFixtureFullPath($expectedFile);
+        $filePath1 = $this->getFixtureFullPath($testData['filename1']);
+        $filePath2 = $this->getFixtureFullPath($testData['filename2']);
+
+        if (isset($testData['formatName'])) {
+            $actual = genDiff($filePath1, $filePath2, $testData['formatName']);
+        } else {
+            $actual = genDiff($filePath1, $filePath2);
+        }
+
+        $this->assertStringEqualsFile($expectedFilePath, $actual);
     }
 
-    public function testGenDiffPlain(): void
+    public static function genDiffProvider(): array
     {
-        $expected = file_get_contents('tests/fixtures/expectedPlain.txt');
-        $this->assertEquals($expected, genDiff('tests/fixtures/file1.json', 'tests/fixtures/file2.json', 'plain'));
-        $this->assertEquals($expected, genDiff('tests/fixtures/file1.yml', 'tests/fixtures/file2.yml', 'plain'));
+        return [
+            'JSON files, format is not passed' => ['expectedStylish.txt',
+            ['filename1' => 'file1.json', 'filename2' => 'file2.json']],
+
+            'YAML files, format is not passed' => ['expectedStylish.txt',
+            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml']],
+
+            'JSON files with stylish format' => ['expectedStylish.txt',
+            ['filename1' => 'file1.json', 'filename2' => 'file2.json', 'formatName' => 'stylish']],
+
+            'YAML files with stylish format' => ['expectedStylish.txt',
+            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml', 'formatNewton' => 'stylish']],
+
+            'JSON files with plain format' => ['expectedPlain.txt',
+            ['filename1' => 'file1.json', 'filename2' => 'file2.json', 'formatName' => 'plain']],
+
+            'YAML files with plain format' => ['expectedPlain.txt',
+            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml', 'formatName' => 'plain']],
+
+            'JSON files with JSON format' => ['expected.json',
+            ['filename1' => 'file1.json', 'filename2' => 'file2.json', 'formatName' => 'json']],
+
+            'YAML files with JSON format' => ['expected.json',
+            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml', 'formatName' => 'json']]
+        ];
     }
 
-    public function testGenDiffJson(): void
+    public function getFixtureFullPath(string $fixtureName): string
     {
-        $expected = file_get_contents('tests/fixtures/expected.json');
-        $this->assertJsonStringEqualsJsonString($expected, genDiff('tests/fixtures/file1.json', 'tests/fixtures/file2.json', 'json'));
-        $this->assertJsonStringEqualsJsonString($expected, genDiff('tests/fixtures/file1.yml', 'tests/fixtures/file2.yml', 'json'));
+        $parts = [__DIR__, '/fixtures', $fixtureName];
+        return realpath(implode('/', $parts));
     }
 }

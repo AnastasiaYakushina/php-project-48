@@ -5,21 +5,20 @@ namespace Differ\Differ;
 use function Differ\Parser\parse;
 use function Differ\Formatters\format;
 
-function genDiff(string $pathToFile1, string $pathToFile2, string $formatName = 'stylish'): string
+function genDiff(string $filePath1, string $filePath2, string $formatName = 'stylish'): string
 {
-    [$file1Content, $extension1] = getFileData($pathToFile1);
-    [$file2Content, $extension2] = getFileData($pathToFile2);
+    [$file1Content, $extension1] = getFileData($filePath1);
+    [$file2Content, $extension2] = getFileData($filePath2);
     $content1 = parse($file1Content, $extension1);
     $content2 = parse($file2Content, $extension2);
     $diffTree = generateDiffTree($content1, $content2);
     return format($diffTree, $formatName);
 }
 
-function getFileData(string $filepath): mixed
+function getFileData(string $filepath): array
 {
     $fileContent = file_get_contents($filepath);
-    $parts = explode('.', $filepath);
-    $extension = end($parts);
+    $extension = pathinfo($filepath)['extension'];
     return [$fileContent, $extension];
 }
 

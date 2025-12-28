@@ -6,15 +6,9 @@ use Symfony\Component\Yaml\Yaml;
 
 function parse(mixed $fileContent, string $extension): array
 {
-    switch ($extension) {
-        case 'json':
-            return json_decode($fileContent, true);
-
-        case 'yml':
-        case 'yaml':
-            return Yaml::parse($fileContent);
-
-        default:
-            return [];
-    }
+    return match ($extension) {
+        'json' => json_decode($fileContent, true),
+        'yml', 'yaml' => Yaml::parse($fileContent),
+        default => throw new \InvalidArgumentException("Unsupported file extension: '$extension'"),
+    };
 }

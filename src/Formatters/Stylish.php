@@ -16,29 +16,19 @@ function formatDiffTreeWithSymbols(array $diffTree): array
         $key = $data['key'];
         $value = $data['value'];
 
-        switch ($status) {
-            case 'unchanged':
-                return [$key => formatValue($value)];
-
-            case 'added':
-                return ["+ {$key}" => formatValue($value)];
-
-            case 'deleted':
-                return ["- {$key}" => formatValue($value)];
-
-            case 'changed':
-                return [
-                    "- {$key}" => formatValue($value['old']),
-                    "+ {$key}" => formatValue($value['new'])
-                ];
-
-            case 'tree':
-                $children = formatDiffTreeWithSymbols($value);
-                return [$key => $children];
-
-            default:
-                return [];
-        }
+        return match ($status) {
+            'unchanged' => [$key => formatValue($value)],
+            'added' => ["+ {$key}" => formatValue($value)],
+            'deleted' => ["- {$key}" => formatValue($value)],
+            'changed' => [
+                "- {$key}" => formatValue($value['old']),
+                "+ {$key}" => formatValue($value['new'])
+            ],
+            'tree' => [
+                $key => formatDiffTreeWithSymbols($value)
+            ],
+            default => [],
+        };
     }, $diffTree);
 
     return array_merge(...$mappedItems);
@@ -46,16 +36,12 @@ function formatDiffTreeWithSymbols(array $diffTree): array
 
 function formatValue(mixed $value): mixed
 {
-    switch (true) {
-        case $value === true:
-            return 'true';
-        case $value === false:
-            return 'false';
-        case $value === null:
-            return 'null';
-        default:
-            return $value;
-    }
+    return match (true) {
+        $value === true => 'true',
+        $value === false => 'false',
+        $value === null => 'null',
+        default => $value,
+    };
 }
 
 function formatDiffTreeToString(array $tree, int $depth = 1): string

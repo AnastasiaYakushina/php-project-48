@@ -18,25 +18,16 @@ function formatDiffTreeToStrings(array $diffTree, array $path = []): array
         $currentPath = $path === [] ? [$key] : [...$path, $key];
         $currentKey = implode('.', $currentPath);
 
-        switch ($status) {
-            case 'added':
-                $value = formatValue($value);
-                return ["Property '{$currentKey}' was added with value: {$value}"];
-
-            case 'deleted':
-                return ["Property '{$currentKey}' was removed"];
-
-            case 'changed':
-                $oldValue = formatValue($value['old']);
-                $newValue = formatValue($value['new']);
-                return ["Property '{$currentKey}' was updated. From {$oldValue} to {$newValue}"];
-
-            case 'tree':
-                return formatDiffTreeToStrings($value, $currentPath);
-
-            default:
-                return [];
-        }
+        return match ($status) {
+            'added' => ["Property '{$currentKey}' was added with value: " . formatValue($value)],
+            'deleted' => ["Property '{$currentKey}' was removed"],
+            'changed' => [
+                "Property '{$currentKey}' was updated. From " .
+                formatValue($value['old']) . " to " . formatValue($value['new'])
+            ],
+            'tree' => formatDiffTreeToStrings($value, $currentPath),
+            default => [],
+        };
     }, $diffTree);
 
     return ($lines !== []) ? array_merge(...$lines) : [];
@@ -45,18 +36,12 @@ function formatDiffTreeToStrings(array $diffTree, array $path = []): array
 
 function formatValue(mixed $value): mixed
 {
-    switch (true) {
-        case $value === true:
-            return 'true';
-        case $value === false:
-            return 'false';
-        case $value === null:
-            return 'null';
-        case is_array($value):
-            return '[complex value]';
-        case is_string($value):
-            return "'{$value}'";
-        default:
-            return $value;
-    }
+    return match (true) {
+        $value === true => 'true',
+        $value === false => 'false',
+        $value === null => 'null',
+        is_array($value) => '[complex value]',
+        is_string($value) => "'{$value}'",
+        default => $value,
+    };
 }

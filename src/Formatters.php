@@ -8,14 +8,10 @@ use function Differ\Formatters\Json\json;
 
 function format(array $diffTree, string $formatName): string
 {
-    switch ($formatName) {
-        case 'stylish':
-            return stylish($diffTree);
-        case 'plain':
-            return plain($diffTree);
-        case 'json':
-            return json($diffTree);
-        default:
-            throw new \UnexpectedValueException("Incorrect format: '$formatName'");
-    }
+    return match ($formatName) {
+        'stylish' => stylish($diffTree),
+        'plain' => plain($diffTree),
+        'json' => json($diffTree),
+        default => throw new \InvalidArgumentException("Incorrect format: '$formatName'"),
+    };
 }
