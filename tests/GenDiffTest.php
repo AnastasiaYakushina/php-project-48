@@ -10,14 +10,14 @@ use function Differ\Differ\genDiff;
 class GenDiffTest extends TestCase
 {
     #[DataProvider('genDiffProvider')]
-    public function testGenDiff(string $expectedFile, array $testData): void
+    public function testGenDiff(string $expectedFile, string $extension, ?string $formatName = null): void
     {
         $expectedFilePath = $this->getFixtureFullPath($expectedFile);
-        $filePath1 = $this->getFixtureFullPath($testData['filename1']);
-        $filePath2 = $this->getFixtureFullPath($testData['filename2']);
+        $filePath1 = $this->getFixtureFullPath("file1.{$extension}");
+        $filePath2 = $this->getFixtureFullPath("file2.{$extension}");
 
-        if (isset($testData['formatName'])) {
-            $actual = genDiff($filePath1, $filePath2, $testData['formatName']);
+        if (isset($formatName)) {
+            $actual = genDiff($filePath1, $filePath2, $formatName);
         } else {
             $actual = genDiff($filePath1, $filePath2);
         }
@@ -28,29 +28,21 @@ class GenDiffTest extends TestCase
     public static function genDiffProvider(): array
     {
         return [
-            'JSON files, format is not passed' => ['expectedStylish.txt',
-            ['filename1' => 'file1.json', 'filename2' => 'file2.json']],
+            'JSON files, format is not passed' => ['expectedStylish.txt', 'json'],
 
-            'YAML files, format is not passed' => ['expectedStylish.txt',
-            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml']],
+            'YAML files, format is not passed' => ['expectedStylish.txt', 'yml'],
 
-            'JSON files with stylish format' => ['expectedStylish.txt',
-            ['filename1' => 'file1.json', 'filename2' => 'file2.json', 'formatName' => 'stylish']],
+            'JSON files with stylish format' => ['expectedStylish.txt', 'json', 'stylish'],
 
-            'YAML files with stylish format' => ['expectedStylish.txt',
-            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml', 'formatNewton' => 'stylish']],
+            'YAML files with stylish format' => ['expectedStylish.txt', 'yml', 'stylish'],
 
-            'JSON files with plain format' => ['expectedPlain.txt',
-            ['filename1' => 'file1.json', 'filename2' => 'file2.json', 'formatName' => 'plain']],
+            'JSON files with plain format' => ['expectedPlain.txt', 'json', 'plain'],
 
-            'YAML files with plain format' => ['expectedPlain.txt',
-            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml', 'formatName' => 'plain']],
+            'YAML files with plain format' => ['expectedPlain.txt', 'yml', 'plain'],
 
-            'JSON files with JSON format' => ['expected.json',
-            ['filename1' => 'file1.json', 'filename2' => 'file2.json', 'formatName' => 'json']],
+            'JSON files with JSON format' => ['expected.json', 'json', 'json'],
 
-            'YAML files with JSON format' => ['expected.json',
-            ['filename1' => 'file1.yml', 'filename2' => 'file2.yml', 'formatName' => 'json']]
+            'YAML files with JSON format' => ['expected.json', 'yml', 'json']
         ];
     }
 
